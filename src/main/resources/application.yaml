@@ -1,0 +1,33 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      default-filters:
+        - TokenRelay=
+      routes:
+        - id: route1
+          uri: http://localhost:8080/
+          predicates:
+            - Path=/resource/**
+
+        - id: angular
+          uri: http://localhost:4200/
+          predicates:
+            - Path=/**
+  security:
+    oauth2:
+      client:
+        registration:
+          gateway:
+            provider: spring
+            client-id: gateway
+            client-secret: secret
+            scope: openid, profile
+            authorization-grant-type: authorization_code
+            redirect-uri: http://127.0.0.1:8081/login/oauth2/code/gateway
+        provider:
+          spring:
+            issuer-uri: http://localhost:9000
